@@ -4,7 +4,7 @@ const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecogni
 const recognition = new SpeechRecognition();
 
 recognition.continuous = false;
-recognition.interimResults = true; // get partial results for faster response
+recognition.interimResults = true; // partial results
 recognition.lang = "en-US";
 
 const speakBtn = document.getElementById("speak-btn");
@@ -17,19 +17,25 @@ const numbers = {
     emergency: "1122"
 };
 
+// Flexible keyword detection
+const sonKeywords = ["son", "sun", "san", "sen"];
+
 // Detect commands
-function detectCommand(text) {
+function detectCommand(speechText) {
     const text = speechText.toLowerCase().trim();
-    const sonKeywords = ["son", "sun", "san", "sen"];
+
     if (text.includes("call") && sonKeywords.some(word => text.includes(word))) {
-        speakResponse("callSon");
+        return "callSon";
+    } else if (text.includes("call") && text.includes("daughter")) {
+        return "callDaughter";
+    } else if (text.includes("help") || text.includes("emergency")) {
+        return "callEmergency";
+    } else {
+        return null;
     }
-    if (text.includes("call") && text.includes("daughter")) return "callDaughter";
-    if (text.includes("help") || text.includes("emergency")) return "callEmergency";
-    return null;
 }
 
-// Speak response
+// Speak response & open dialer / WhatsApp
 function speakResponse(command) {
     let message = "";
     let numberToCall = "";
@@ -45,24 +51,24 @@ function speakResponse(command) {
         openWhatsApp = true;
     } else if (command === "callEmergency") {
         message = "Calling emergency number now!";
-        numberToCall = "1122";
+        numberToCall = numbers.emergency;
         openWhatsApp = false;
     } else {
         message = "Sorry, I didn't understand.";
     }
 
+    // Speak message
     const utter = new SpeechSynthesisUtterance(message);
     utter.lang = "en-US";
     speechSynthesis.cancel();
     speechSynthesis.speak(utter);
 
+    // Open dialer or WhatsApp after 1 second
     if (numberToCall) {
         setTimeout(() => {
             if (openWhatsApp) {
-                // Opens native WhatsApp app
                 window.location.href = `whatsapp://send?phone=${numberToCall}&text=Hello`;
             } else {
-                // Opens phone dialer
                 window.location.href = `tel:${numberToCall}`;
             }
         }, 1000);
@@ -83,7 +89,7 @@ recognition.onresult = function (event) {
     typingTimeout = setTimeout(() => {
         const command = detectCommand(transcript);
         speakResponse(command);
-    }, 600); // wait 0.6 sec after last word
+    }, 600); // 0.6 sec after last word
 };
 
 recognition.onend = function () {
@@ -97,10 +103,7 @@ speakBtn.addEventListener("click", function () {
 
 // Emergency button function
 function callEmergency() {
-    let utter = new SpeechSynthesisUtterance("Calling emergency number now!");
-    utter.lang = "en-US";
-    speechSynthesis.cancel();
-    speechSynthesis.speak(utter);
+    speakResponse("callEmergency");
 }
 
 // --------------------------
@@ -114,15 +117,14 @@ function displayReminders() {
     remindersDiv.innerHTML = "";
     for (let i = 0; i < reminders.length; i++) {
         let r = reminders[i];
-        let status = r.taken ? "✅ Taken" : "";
         remindersDiv.innerHTML += `
-                <div class="reminder">
+            <div class="reminder">
                 <span>${r.name} at ${r.time}</span>
-                 <button onclick="markTaken(${i})">Mark Taken</button>
-                 <button onclick="removeReminder(${i})">Remove</button>
+                <button onclick="markTaken(${i})">✅ Taken</button>
+                <button onclick="removeReminder(${i})">❌ Remove</button>
                 <span class="taken">${r.taken ? "✅ Taken" : ""}</span>
-                </div>
-                `;
+            </div>
+        `;
     }
 }
 
@@ -133,10 +135,11 @@ function markTaken(index) {
     displayReminders();
 }
 
+// Remove reminder
 function removeReminder(index) {
-    reminders.splice(index, 1); // remove the reminder from array
-    localStorage.setItem("medReminders", JSON.stringify(reminders)); // update storage
-    displayReminders(); // refresh the display
+    reminders.splice(index, 1);
+    localStorage.setItem("medReminders", JSON.stringify(reminders));
+    displayReminders();
 }
 
 // Add new reminder
@@ -162,7 +165,7 @@ displayReminders();
 // Check every 30 seconds for due medicine
 setInterval(function () {
     let now = new Date();
-    let currentTime = now.toTimeString().slice(0, 5); // HH:MM
+    let currentTime = now.toTimeString().slice(0, 5);
 
     for (let i = 0; i < reminders.length; i++) {
         let r = reminders[i];
