@@ -1,0 +1,46 @@
+ body {
+     font-family: Arial;
+     text-align: center;
+     padding: 20px;
+     background-color: #f0f8ff;
+     color: #000;
+ }
+
+ h1 {
+     font-size: 28px;
+     margin-bottom: 30px;
+ }
+
+ button,
+ input {
+     font-size: 20px;
+     padding: 15px 30px;
+     margin: 10px;
+     border-radius: 10px;
+ }
+
+ #output {
+     margin-top: 20px;
+     font-size: 22px;
+     font-weight: bold;
+ }
+
+ .emergency {
+     background-color: #ff4c4c;
+     color: white;
+     font-weight: bold;
+ }
+
+ .medicine {
+     margin-top: 20px;
+ }
+
+ .taken {
+     color: green;
+     font-weight: bold;
+     font-size: 18px;
+ }
+
+ .reminder {
+     margin-top: 10px;
+ }

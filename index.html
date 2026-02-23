@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elderly Voice Assistant</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>Elderly Voice Assistant</h1>
+
+    <!-- Step 1: Emergency Call -->
+    <button id="speak-btn">🎤 Speak Emergency Command</button>
+    <button class="emergency" onclick="callEmergency()">🚨 Emergency Call</button>
+    <div id="output"></div>
+
+    <!-- Step 2: Medicine Reminder -->
+    <div class="medicine">
+        <h2>Medicine Reminder</h2>
+        <input type="text" id="med-name" placeholder="Medicine Name">
+        <input type="time" id="med-time">
+        <button id="add-med">Add Reminder</button>
+        <div id="reminders"></div>
+    </div>
+
+    <script src="main.js"></script>
+</body>
+
+</html>
