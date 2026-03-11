@@ -44,3 +44,11 @@
  .reminder {
      margin-top: 10px;
  }
+
+ .hints {
+     font-size: 20px;
+     margin-bottom: 20px;
+     background: white;
+     padding: 15px;
+     border-radius: 10px;
+ }
